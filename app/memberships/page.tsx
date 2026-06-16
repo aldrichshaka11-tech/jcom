@@ -211,7 +211,7 @@ export default function MembershipsPage() {
       {/* Page Header */}
       <section className="page-header-banner">
         <div className="container">
-          <h1 className="page-header-title">JCOM MEMBERSHIPS</h1>
+          <h1 className="page-header-title">JCOM US</h1>
         </div>
       </section>
 

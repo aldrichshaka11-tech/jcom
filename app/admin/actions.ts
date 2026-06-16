@@ -131,6 +131,16 @@ export async function addEvent(formData: FormData) {
       return { success: false, error: "Please provide either an Event Photo URL or select an Image file to upload." };
     }
 
+    // Process gallery images
+    const galleryImages: string[] = [];
+    const galleryFiles = formData.getAll("galleryFiles") as File[];
+    for (const file of galleryFiles) {
+      if (file && file.size > 0 && file.name) {
+        const fileUrl = await saveUploadedFile(file);
+        galleryImages.push(fileUrl);
+      }
+    }
+
     await db.event.create({
       data: {
         title,
@@ -141,6 +151,7 @@ export async function addEvent(formData: FormData) {
         actionUrl: actionUrl || null,
         description,
         imageUrl,
+        galleryImages,
       },
     });
 

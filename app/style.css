@@ -10,10 +10,14 @@ body {
   overflow-x: hidden;
 }
 
-/* FLOATING PILL NAVBAR */
+/* ================= FIXED HEADER ================= */
 .fixed-header {
-  background: transparent !important;
-  padding: 0 !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+ 
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   position: fixed;
   top: 0 !important;
@@ -21,6 +25,12 @@ body {
   width: 100%;
   z-index: 1050;
   margin: 0 !important;
+}
+
+.fixed-header.scrolled {
+
+  background: rgba(255, 255, 255, 0.98) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 }
 
 .navbar-collapse.collapse {
@@ -31,29 +41,6 @@ body {
   padding: 0 !important;
   margin: 0 !important;
   background: transparent !important; /* Force transparent background */
-}
-
-.navbar-pill {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border-radius: 100px;
-  padding: 10px 40px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  margin: 15px auto !important; /* Suspend it off the top */
-  max-width: 1300px;
-  width: 95%;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-/* Scroll shrink effect */
-.fixed-header.scrolled .navbar-pill {
-  padding: 5px 30px;
-  margin: 5px auto !important;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .navbar-brand img {
@@ -186,7 +173,7 @@ body {
 
 /* ================= FIXED HEADER ================= */
 .news-section{
-  margin-top: 110px;
+  margin-top: 76px;
   display:flex;
   align-items:center;
   overflow:hidden;
@@ -3061,3 +3048,424 @@ body {
     margin: 4rem 0;
 }
 
+/* ===================================================
+   HOME PAGE - HOW JCOM WORKS (team-section1 + carousel)
+   =================================================== */
+.team-section1 {
+    background: radial-gradient(circle at top, #3b3b3b 0%, #1f1f1f 70%);
+    color: #fff;
+    padding-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.team-section1::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%);
+    transform: skewX(-6deg);
+}
+
+.kk_associates-section {
+    padding: 60px 0;
+}
+
+.kk_associates-title {
+    font-size: 48px;
+    line-height: 1.2;
+}
+
+.kk_our {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+}
+
+.kk_associates {
+    font-weight: 700;
+}
+
+/* Carousel */
+.kk_carousel-wrapper {
+    overflow: hidden;
+    width: calc((300px * 2) + 24px);
+}
+
+.kk_carousel-track {
+    display: flex;
+    gap: 24px;
+    transition: transform 0.6s ease;
+}
+
+/* Card */
+.kk_associate-card {
+    min-width: 300px;
+    height: 300px;
+    background: #f7f7f7;
+    border-radius: 6px;
+    padding: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.kk_associate-card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+.kk_associate-card h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.kk_associate-card p {
+    font-size: 13px;
+    color: #555;
+    margin: 0;
+}
+
+/* Second card offset for staggered look */
+@media (min-width: 768px) {
+    .kk_associate-card:nth-child(even) {
+        margin-top: 40px;
+    }
+}
+
+/* Carousel Nav Buttons */
+.kk_carousel-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: #00a4ef;
+    color: #fff;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.kk_carousel-btn:hover {
+    background: #0084c7;
+    transform: scale(1.08);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .kk_associates-title {
+        text-align: center;
+        font-size: 36px;
+        margin-bottom: 40px;
+    }
+
+    .kk_carousel-wrapper {
+        width: 100%;
+        max-width: 380px;
+        margin: 0 auto;
+    }
+
+    .kk_carousel-track {
+        gap: 16px;
+    }
+
+    .kk_associate-card {
+        min-width: 181px;
+        height: 297px;
+    }
+
+    .kk_associate-card img {
+        height: 100px;
+    }
+
+    .container1 {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .mar-left {
+        margin-left: 0;
+    }
+}
+
+/* ===================================================
+   HOME PAGE - WHO ARE WE SECTION (ms_section)
+   =================================================== */
+.ms_section {
+    background: white;
+    padding: 110px 0;
+    color: #000000;
+    position: relative;
+    overflow: hidden;
+}
+
+.ms_section::before {
+    content: 'WHO WE ARE';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12vw;
+    font-weight: 900;
+    color: rgba(0, 0, 0, 0.03);
+    white-space: nowrap;
+    z-index: 0;
+    pointer-events: none;
+    text-transform: uppercase;
+}
+
+.ms_video {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+}
+
+.ms_video img {
+    width: 100%;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.ms_video:hover img {
+    transform: scale(1.04);
+}
+
+.ms_content {
+    position: relative;
+    z-index: 2;
+}
+
+.ms_content h2 {
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: #111;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.ms_content p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #555;
+}
+
+.ms_feature_item span {
+    font-size: 1rem;
+    color: #111;
+}
+
+@media (max-width: 991px) {
+    .ms_section { padding: 70px 0; }
+    .ms_content h2 { font-size: 2rem; }
+    .ms_content { margin-top: 40px; }
+}
+
+/* ===================================================
+   HOME PAGE - CHAPTERS SECTION
+   =================================================== */
+.chapters-section {
+    background: #333;
+    padding: 90px 0;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+
+.chapters-header-row {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.header-left {
+    flex: 1;
+}
+
+.chapters-label-badge {
+    padding: 4px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.chapters-main-title {
+    font-size: 38px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.header-divider {
+    width: 1.5px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.header-right {
+    flex: 1;
+}
+
+.header-right p {
+    font-size: 15px;
+    line-height: 1.5;
+    opacity: 0.9;
+    margin: 0;
+}
+
+/* Chapter Cards */
+.chapter-card-new {
+    background: #fff;
+    border-radius: 4px;
+    padding: 20px;
+    position: relative;
+    height: auto;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    color: #333;
+}
+
+.card-head-new {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.icon-box-new {
+    width: 45px;
+    height: 45px;
+    background: #e6eff8;
+    color: #0d5fb7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 20px;
+}
+
+.name-new {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1f2937;
+    letter-spacing: 0.5px;
+}
+
+.card-body-new p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #4b5563;
+    margin-bottom: 20px;
+}
+
+.chapter-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    object-position: top center;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.card-footer-new {
+    margin-top: auto;
+}
+
+.btn-chapter-read {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: #0d5fb7;
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-chapter-read:hover {
+    background: #0a4a8f;
+    color: #fff;
+}
+
+.arrow-circle-new {
+    width: 22px;
+    height: 22px;
+    background: #fff;
+    color: #0d5fb7;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+/* Corner accent shape */
+.card-accent-shape {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 80px;
+    height: 80px;
+    background: #fdf2e9;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    pointer-events: none;
+}
+
+/* Chapters Swiper Navigation */
+.chapters-next, .chapters-prev {
+    background: #00a4ef !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    opacity: 0.9;
+    box-shadow: 0 4px 10px rgba(0, 164, 239, 0.3);
+}
+
+.chapters-next:hover, .chapters-prev:hover {
+    opacity: 1;
+    background: #008cc9 !important;
+}
+
+.chapters-next::after, .chapters-prev::after {
+    font-size: 16px !important;
+    color: #fff !important;
+    font-weight: bold;
+}
+
+.chapters-prev { left: 10px !important; }
+.chapters-next { right: 10px !important; }
+
+@media (max-width: 1200px) {
+    .chapters-prev { left: 5px !important; }
+    .chapters-next { right: 5px !important; }
+}
+
+@media (max-width: 991px) {
+    .chapters-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .chapters-main-title {
+        font-size: 28px;
+    }
+    .chapters-next, .chapters-prev {
+        display: none !important;
+    }
+    .chapter-img {
+        height: 240px;
+    }
+}

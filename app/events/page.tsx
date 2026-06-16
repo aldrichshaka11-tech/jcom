@@ -162,9 +162,6 @@ export default async function EventsPage() {
                         className="img-fluid h-100 w-100 object-fit-cover event-img"
                         style={{ minHeight: "250px" }}
                         alt={event.title}
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800";
-                        }}
                       />
                       <span className={`badge position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill shadow-sm ${getBadgeClass(event.category)}`}>
                         {event.category || "Event"}
@@ -181,9 +178,24 @@ export default async function EventsPage() {
                           <div className="text-muted small">
                             <i className="bi bi-geo-alt-fill me-2 text-danger"></i> {event.location}
                           </div>
-                          <Link href={event.actionUrl && event.actionUrl !== "#" ? event.actionUrl : "/contact"} className="btn btn-primary px-4 rounded-pill btn-sm fw-bold">
-                            Register Now <i className="bi bi-arrow-right-short ms-1"></i>
-                          </Link>
+                          <div className="d-flex gap-2">
+                            {event.galleryImages && event.galleryImages.length > 0 && (
+                              <button
+                                className="btn btn-outline-primary px-3 rounded-pill btn-sm fw-bold highlight-btn"
+                                data-bs-toggle="modal"
+                                data-bs-target="#galleryModal"
+                                data-title={event.title}
+                                data-img={event.imageUrl || "https://placehold.co/600x400"}
+                                data-gallery={JSON.stringify(event.galleryImages || [])}
+                                data-desc={event.description}
+                              >
+                                View Posters <i className="bi bi-images ms-1"></i>
+                              </button>
+                            )}
+                            <Link href={event.actionUrl && event.actionUrl !== "#" ? event.actionUrl : "/contact"} className="btn btn-primary px-4 rounded-pill btn-sm fw-bold">
+                              Register Now <i className="bi bi-arrow-right-short ms-1"></i>
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -221,9 +233,6 @@ export default async function EventsPage() {
                       src={event.imageUrl || "https://placehold.co/600x400?text=JCOM+Event"}
                       className="card-img-top h-100 w-100 object-fit-cover event-img"
                       alt={event.title}
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1511578314322-379afb476865?w=800";
-                      }}
                     />
                     <span className={`badge position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill shadow-sm ${getBadgeClass(event.category)}`}>
                       {event.category || "Event"}
@@ -247,6 +256,7 @@ export default async function EventsPage() {
                       data-bs-target="#galleryModal"
                       data-title={event.title}
                       data-img={event.imageUrl || "https://images.unsplash.com/photo-1511578314322-379afb476865?w=800"}
+                      data-gallery={JSON.stringify(event.galleryImages || [])}
                       data-desc={event.description}
                     >
                       View Highlights <i className="bi bi-images ms-1"></i>
@@ -264,23 +274,7 @@ export default async function EventsPage() {
         </div>
       </div>
 
-      {/* GALLERY LIGHTBOX MODAL */}
-      <div className="modal fade" id="galleryModal" tabIndex={-1} aria-labelledby="galleryModalLabel" aria-hidden="true">
-        <div className="modal-dialog modal-dialog-centered modal-lg">
-          <div className="modal-content border-0 bg-dark text-white" style={{ borderRadius: "20px", overflow: "hidden" }}>
-            <div className="modal-header border-0 pb-0">
-              <h5 className="modal-title fw-bold text-white" id="galleryModalLabel">Event Highlights</h5>
-              <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div className="modal-body p-4 text-center">
-              <img src="" id="galleryModalImg" className="img-fluid rounded mb-3 object-fit-contain mx-auto" style={{ maxHeight: "480px", width: "100%" }} alt="Event Image" />
-              <p className="text-white-50 m-0 fs-6" id="galleryModalDesc"></p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Client-side gallery click handler */}
+      {/* Client-side gallery click handler & Modal Renderer */}
       <EventsModalHandler />
     </>
   );

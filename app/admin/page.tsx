@@ -46,6 +46,7 @@ export default function AdminPage() {
     description: "",
   });
   const [eventFile, setEventFile] = useState<File | null>(null);
+  const [galleryInputCount, setGalleryInputCount] = useState(1);
 
   const [submittingTeam, setSubmittingTeam] = useState(false);
   const [submittingEvent, setSubmittingEvent] = useState(false);
@@ -135,6 +136,13 @@ export default function AdminPage() {
     if (eventFile) {
       fd.append("imageFile", eventFile);
     }
+    const rawFd = new FormData(e.currentTarget as HTMLFormElement);
+    const allGalleryFiles = rawFd.getAll("galleryFiles") as File[];
+    allGalleryFiles.forEach((file) => {
+      if (file && file.size > 0) {
+        fd.append("galleryFiles", file);
+      }
+    });
 
     const result = await addEvent(fd);
     if (result.success) {
@@ -150,6 +158,7 @@ export default function AdminPage() {
         description: "",
       });
       setEventFile(null);
+      setGalleryInputCount(1);
       // Reset file input
       const fileInput = document.getElementById("e_image_file") as HTMLInputElement;
       if (fileInput) fileInput.value = "";
@@ -236,7 +245,7 @@ export default function AdminPage() {
             <button className={`nav-link fw-bold px-4 ${activeTab === "events" ? "active" : ""}`} onClick={() => setActiveTab("events")}>Events</button>
           </li>
           <li className="nav-item">
-            <button className={`nav-link fw-bold px-4 ${activeTab === "apps" ? "active" : ""}`} onClick={() => setActiveTab("apps")}>Membership Apps</button>
+            <button className={`nav-link fw-bold px-4 ${activeTab === "apps" ? "active" : ""}`} onClick={() => setActiveTab("apps")}>Membership</button>
           </li>
           <li className="nav-item">
             <button className={`nav-link fw-bold px-4 ${activeTab === "contacts" ? "active" : ""}`} onClick={() => setActiveTab("contacts")}>Contact Queries</button>
@@ -379,8 +388,26 @@ export default function AdminPage() {
                         </div>
                         
                         <div className="col-md-6">
-                          <label className="form-label text-dark small fw-bold">Upload Image File (Direct Upload)</label>
+                          <label className="form-label text-dark small fw-bold">Upload Event Image (Direct Upload)</label>
                           <input type="file" className="form-control" id="e_image_file" accept="image/*" onChange={(e) => setEventFile(e.target.files?.[0] || null)} />
+                        </div>
+                        <div className="col-md-6">
+                          <label className="form-label text-dark small fw-bold">Upload Gallery Images (Max 5)</label>
+                          {Array.from({ length: galleryInputCount }).map((_, i) => (
+                            <div className="d-flex align-items-center mb-2" key={i}>
+                              <input type="file" className="form-control" name="galleryFiles" accept="image/*" multiple />
+                              {i === galleryInputCount - 1 && (
+                                <button type="button" className="btn btn-outline-primary ms-2 fw-bold" onClick={() => setGalleryInputCount(c => c < 5 ? c + 1 : c)} title="Add another image row" disabled={galleryInputCount >= 5}>
+                                  +
+                                </button>
+                              )}
+                              {galleryInputCount > 1 && i === galleryInputCount - 1 && (
+                                <button type="button" className="btn btn-outline-danger ms-2 fw-bold" onClick={() => setGalleryInputCount(c => c - 1)} title="Remove row">
+                                  -
+                                </button>
+                              )}
+                            </div>
+                          ))}
                         </div>
                         <div className="col-md-6">
                           <label className="form-label text-dark small fw-bold">OR Event Photo URL</label>
@@ -428,7 +455,12 @@ export default function AdminPage() {
                                 </td>
                                 <td className="text-dark">
                                   <strong>{event.title}</strong> <br />
-                                  <span className="badge bg-info text-dark small">{event.category}</span>
+                                  <div className="d-flex gap-2 align-items-center mt-1">
+                                    <span className="badge bg-info text-dark small">{event.category}</span>
+                                    {event.galleryImages && event.galleryImages.length > 0 && (
+                                      <span className="badge bg-secondary small"><i className="bi bi-images me-1"></i>{event.galleryImages.length}</span>
+                                    )}
+                                  </div>
                                 </td>
                                 <td className="text-muted small">
                                   {new Date(event.date).toLocaleDateString()} <br />

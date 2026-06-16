@@ -21,16 +21,17 @@ model TeamMember {
 }
 
 model Event {
-  id          String   @id @default(uuid())
-  title       String
-  category    String
-  date        DateTime
-  time        String?
-  location    String
-  imageUrl    String
-  actionUrl   String?
-  description String
-  createdAt   DateTime @default(now())
+  id            String   @id @default(uuid())
+  title         String
+  category      String
+  date          DateTime
+  time          String?
+  location      String
+  imageUrl      String
+  galleryImages String[]
+  actionUrl     String?
+  description   String
+  createdAt     DateTime @default(now())
 }
 
 model MembershipApplication {

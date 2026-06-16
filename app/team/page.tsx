@@ -674,9 +674,6 @@ export default async function TeamPage() {
                             <img
                               src={member.imageUrl}
                               alt={member.name}
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = "https://placehold.co/400x400";
-                              }}
                             />
                           </div>
                           <div className="header-info">

@@ -6,10 +6,15 @@ import Link from "next/link";
 export default function Home() {
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const Swiper = (window as any).Swiper;
-      const gsap = (window as any).gsap;
+      const initScripts = () => {
+        const Swiper = (window as any).Swiper;
+        const gsap = (window as any).gsap;
 
-      if (Swiper) {
+        if (!Swiper || !gsap) {
+          setTimeout(initScripts, 100);
+          return;
+        }
+
         // Hero Swiper
         const heroSwiper = new Swiper(".heroSwiper", {
           loop: true,
@@ -31,15 +36,13 @@ export default function Home() {
           },
           on: {
             init: function (this: any) {
-              animateHeroContent(this.slides[this.activeIndex]);
+              animateHeroContent(this.slides[this.activeIndex], gsap);
             },
             slideChangeTransitionStart: function () {
-              if (gsap) {
-                gsap.set("[data-gsap]", { opacity: 0, x: -50, scale: 0.8 });
-              }
+              gsap.set("[data-gsap]", { opacity: 0, x: -50, scale: 0.8 });
             },
             slideChangeTransitionEnd: function (this: any) {
-              animateHeroContent(this.slides[this.activeIndex]);
+              animateHeroContent(this.slides[this.activeIndex], gsap);
             },
           },
         });
@@ -68,9 +71,11 @@ export default function Home() {
             },
           },
         });
-      }
+      };
 
-      function animateHeroContent(activeSlide: HTMLElement) {
+      initScripts();
+
+      function animateHeroContent(activeSlide: HTMLElement, gsap: any) {
         if (!gsap || !activeSlide) return;
         const elements = activeSlide.querySelectorAll("[data-gsap]");
         elements.forEach((el) => {
@@ -133,27 +138,29 @@ export default function Home() {
     <div>
       {/* Dynamic News Marquee */}
       <section id="events" className="news-section">
-        <div className="news-label">News & Events Recruitment</div>
-        <div className="news-marquee">
-          <div className="news-track">
-            <div className="news-item">
-              <img src="/images/new.gif" alt="New gif" />
-              <span className="news-dot">•</span>
-              <a className="text-decoration-none text-light fw-bold" href="#">
-                Empowering Business Leaders Through Networking & Opportunities
-              </a>
-            </div>
-            <div className="news-item">
-              <span className="news-dot">•</span>
-              <a className="text-decoration-none text-light fw-bold" href="#">
-                A platform where business meets opportunity. Network, collaborate, and unlock new possibilities with JCOM Zone
-              </a>
-            </div>
-            <div className="news-item">
-              <span className="news-dot">•</span>
-              <a className="text-decoration-none text-light fw-bold" href="#">
-                Connect • Collaborate • Create Opportunities • Grow Together
-              </a>
+        <div className="container d-flex align-items-center h-100 p-0">
+          <div className="news-label" style={{ zIndex: 2 }}>News & Events Recruitment</div>
+          <div className="news-marquee">
+            <div className="news-track">
+              <div className="news-item">
+                <img src="/images/new.gif" alt="New gif" style={{ height: '30px', marginRight: '10px' }} />
+                <span className="news-dot">•</span>
+                <a className="text-decoration-none text-light fw-bold" href="#">
+                  Empowering Business Leaders Through Networking & Opportunities
+                </a>
+              </div>
+              <div className="news-item">
+                <span className="news-dot">•</span>
+                <a className="text-decoration-none text-light fw-bold" href="#">
+                  A platform where business meets opportunity. Network, collaborate, and unlock new possibilities with JCOM Zone
+                </a>
+              </div>
+              <div className="news-item">
+                <span className="news-dot">•</span>
+                <a className="text-decoration-none text-light fw-bold" href="#">
+                  Connect • Collaborate • Create Opportunities • Grow Together
+                </a>
+              </div>
             </div>
           </div>
         </div>
