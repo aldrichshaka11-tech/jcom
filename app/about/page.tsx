@@ -9,11 +9,7 @@ export default function About() {
       <section className="page-header-banner">
         <div className="container">
           <h1 className="page-header-title">About Us</h1>
-          <div className="page-breadcrumbs">
-            <Link href="/">Home</Link>
-            <span>/</span>
-            <span className="current">About Us</span>
-          </div>
+          
         </div>
       </section>
 

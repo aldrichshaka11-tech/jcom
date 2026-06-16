@@ -1,9 +1,43 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { getHomeEvents } from "./homeActions";
 
 export default function Home() {
+  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+  const [completedEvents, setCompletedEvents] = useState<any[]>([]);
+
+  useEffect(() => {
+    getHomeEvents().then((data) => {
+      setUpcomingEvents(data.upcomingEvents);
+      setCompletedEvents(data.completedEvents);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (upcomingEvents.length > 0 && typeof window !== "undefined" && (window as any).Swiper) {
+      // Destroy existing instance if it exists to prevent duplicates
+      const existingElement = document.querySelector(".newsSwiper") as any;
+      if (existingElement && existingElement.swiper) {
+        existingElement.swiper.destroy(true, true);
+      }
+
+      new (window as any).Swiper(".newsSwiper", {
+        slidesPerView: 1,
+        loop: upcomingEvents.length > 1,
+        autoplay: {
+          delay: 3000,
+          disableOnInteraction: false,
+        },
+        pagination: {
+          el: ".newsSwiper .swiper-pagination",
+          clickable: true,
+        },
+      });
+    }
+  }, [upcomingEvents]);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const initScripts = () => {
@@ -186,9 +220,12 @@ export default function Home() {
                       <p className="hero-desc" data-gsap="fade-right" data-gsap-delay="0.4">
                         JCOM provides the essential platform, resources, and mentorship you need to excel in your professional journey.
                       </p>
-                      <div className="hero-btns" data-gsap="fade-right" data-gsap-delay="0.6">
+                      <div className="hero-btns d-flex flex-wrap gap-3" data-gsap="fade-right" data-gsap-delay="0.6">
                         <Link href="/memberships" className="btn btn-premium">
                           Get Started Today <i className="bi bi-chevron-right"></i>
+                        </Link>
+                        <Link href="/events" className="btn btn-premium-outline">
+                          Explore Events <i className="bi bi-calendar-event"></i>
                         </Link>
                       </div>
                     </div>
@@ -214,9 +251,12 @@ export default function Home() {
                         <span>Together.</span>
                       </h1>
                       <p className="hero-desc">Connecting Communities, Creating Impact.</p>
-                      <div className="hero-btns">
+                      <div className="hero-btns d-flex flex-wrap gap-3">
                         <Link href="/about" className="btn btn-premium">
                           Discover More <i className="bi bi-chevron-right"></i>
+                        </Link>
+                        <Link href="/contact" className="btn btn-premium-outline">
+                          Contact Us <i className="bi bi-envelope"></i>
                         </Link>
                       </div>
                     </div>
@@ -241,65 +281,60 @@ export default function Home() {
           {/* LEFT: UPCOMING */}
           <div className="col-md-6">
             <h3 className="section-title">Upcoming Events</h3>
-            <div id="newsCarousel" className="carousel slide" data-bs-ride="carousel">
-              <div className="carousel-inner">
-                <div className="carousel-item active">
-                  <div className="news-card">
-                    <img src="/images/ev.jpg" alt="Event" />
-                    <div className="news-body">
-                      <h6>
-                        An innovation-driven ideathon encouraging students to present creative solutions for real-world challenges.
-                      </h6>
+            <div className="swiper newsSwiper" key={`news-${upcomingEvents.length}`}>
+              <div className="swiper-wrapper">
+                {upcomingEvents.length > 0 ? (
+                  upcomingEvents.map((event) => (
+                    <div className="swiper-slide" key={event.id}>
+                      <div className="news-card">
+                        <img src={event.imageUrl || "https://placehold.co/600x400?text=JCOM"} alt={event.title} />
+                        <div className="news-body">
+                          <h6>
+                            {event.title} - {new Date(event.date).toLocaleDateString()}
+                            <br />
+                            <small className="text-muted fw-normal">{event.description?.substring(0, 80)}...</small>
+                          </h6>
+                        </div>
+                        <Link href="/events" className="read-more text-dark fw-bold text-decoration-none">Explore More</Link>
+                      </div>
                     </div>
-                    <div className="read-more text-dark fw-bold">Explore More</div>
-                  </div>
-                </div>
-
-                <div className="carousel-item">
-                  <div className="news-card">
-                    <img src="/images/ev2.jpg" alt="Event 2" />
-                    <div className="news-body">
-                      <h6>
-                        A guest lecture on Artificial Intelligence and Machine Learning was successfully conducted on{" "}
-                        <strong>December 12, 2026</strong>.
-                      </h6>
+                  ))
+                ) : (
+                  <div className="swiper-slide">
+                    <div className="news-card p-4 text-center">
+                      <div className="news-body">
+                        <h6>No upcoming events at the moment.</h6>
+                      </div>
                     </div>
-                    <div className="read-more">READ MORE &gt;</div>
                   </div>
-                </div>
+                )}
               </div>
-
-              <button className="carousel-control-prev" type="button" data-bs-target="#newsCarousel" data-bs-slide="prev">
-                <span className="carousel-control-prev-icon prev-icon"></span>
-              </button>
-              <button className="carousel-control-next" type="button" data-bs-target="#newsCarousel" data-bs-slide="next">
-                <span className="carousel-control-next-icon prev-icon"></span>
-              </button>
+              <div className="swiper-pagination position-relative mt-3"></div>
             </div>
           </div>
 
           {/* RIGHT: COMPLETED */}
           <div className="col-md-6">
             <h3 className="section-title">Our Completed Events</h3>
-            <div className="bulletin-box">
-              <div className="bulletin-track">
-                <div className="bulletin-item">
-                  <strong>Statistical Tools Workshop</strong>
-                  <p>November 03 – 05, 2025 | Phase II: Feb 13 – 15, 2026</p>
-                </div>
-                <div className="bulletin-item">
-                  <strong>IDEATHON-2025</strong>
-                  <p>Internal Hackathon | 18.09.2025 – 20.09.2025</p>
-                </div>
-                <div className="bulletin-item">
-                  <strong>Ph.D Admission Notification</strong>
-                  <p>December 2025 Batch</p>
-                </div>
-                <div className="bulletin-item">
-                  <strong>Digital Marketing Strategies</strong>
-                  <p>Guest Lecture | September 10, 2025</p>
-                </div>
+            <div className="bulletin-box d-flex flex-column" style={{ height: "430px" }}>
+              <div className="bulletin-track flex-grow-1" style={{ overflowY: "auto" }}>
+                {completedEvents.length > 0 ? (
+                  completedEvents.map((event) => (
+                    <div className="bulletin-item" key={event.id}>
+                      <strong>{event.title}</strong>
+                      <p>{new Date(event.date).toLocaleDateString()} {event.location ? `| ${event.location}` : ""}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="bulletin-item">
+                    <strong>No recent events</strong>
+                    <p>Check back later for updates</p>
+                  </div>
+                )}
               </div>
+              <Link href="/events" className="read-more text-dark fw-bold text-decoration-none" style={{ borderTop: "1px solid #ddd", background: "#ffffff", display: "block" }}>
+                Explore More
+              </Link>
             </div>
           </div>
         </div>

@@ -130,11 +130,7 @@ export default async function EventsPage() {
       <section className="page-header-banner">
         <div className="container">
           <h1 className="page-header-title">JCOM ZONE 18 EVENTS</h1>
-          <div className="page-breadcrumbs">
-            <Link href="/">Home</Link>
-            <span>/</span>
-            <span className="current">Events</span>
-          </div>
+         
         </div>
       </section>
 

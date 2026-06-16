@@ -53,3 +53,22 @@ model ContactQuery {
   message   String
   timestamp DateTime @default(now())
 }
+
+model TableMember {
+  id        String   @id @default(uuid())
+  name      String
+  mobile    String
+  address   String
+  business  String
+  tableName String   // Associated table name, e.g., "JCOM L Ambasamudram 1.0"
+  createdAt DateTime @default(now())
+}
+
+model JcomTable {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  phone     String
+  email     String
+  createdAt DateTime @default(now())
+}
+

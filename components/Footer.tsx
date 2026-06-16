@@ -1,6 +1,15 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  // Hide Footer on Admin pages
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
   return (
     <footer className="footer-jcom mt-auto">
       <div className="container">

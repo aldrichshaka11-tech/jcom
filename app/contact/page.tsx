@@ -388,11 +388,7 @@ export default function ContactPage() {
       <section className="page-header-banner">
         <div className="container">
           <h1 className="page-header-title">Contact Us</h1>
-          <div className="page-breadcrumbs">
-            <a href="/">Home</a>
-            <span>/</span>
-            <span className="current">Contact Us</span>
-          </div>
+        
         </div>
       </section>
 

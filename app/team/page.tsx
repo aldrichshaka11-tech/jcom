@@ -1,10 +1,14 @@
 import { db } from "@/lib/db";
 import Link from "next/link";
 import TeamModalHandler from "./TeamModalHandler";
+import { seedDatabaseIfEmpty } from "@/lib/seed";
 
 export const revalidate = 0; // ensure page is always dynamically rendered
 
 export default async function TeamPage() {
+  // Run database seed check
+  await seedDatabaseIfEmpty();
+
   // Fetch dynamic members from PostgreSQL
   let dbMembers: any[] = [];
   try {
@@ -15,16 +19,26 @@ export default async function TeamPage() {
     console.error("Error fetching team members from DB:", error);
   }
 
+  // Fetch dynamic tables from PostgreSQL
+  let dbTables: any[] = [];
+  try {
+    dbTables = await db.jcomTable.findMany({
+      orderBy: { name: "asc" },
+    });
+  } catch (error) {
+    console.error("Error fetching JCOM tables from DB:", error);
+  }
+
   // Find chairman and past chairman from DB
-  const dbChairman = dbMembers.find(
+  const dbChairmen = dbMembers.filter(
     (m) =>
       m.role.toLowerCase().includes("chairman") &&
       !m.role.toLowerCase().includes("past")
   );
-  const dbPastChairman = dbMembers.find(
+  const dbPastChairmen = dbMembers.filter(
     (m) =>
-      m.role.toLowerCase().includes("past chairman") ||
-      m.role.toLowerCase().includes("past-chairman")
+      m.role.toLowerCase().includes("past") &&
+      m.role.toLowerCase().includes("chairman")
   );
 
   // Filter board members (everyone who is not a chairman or past chairman)
@@ -32,118 +46,6 @@ export default async function TeamPage() {
     (m) => !m.role.toLowerCase().includes("chairman")
   );
 
-  // Static Fallback Team Members (shown if no board members are in the database)
-  const staticBoardMembers = [
-    {
-      name: "Rajamoorthy R",
-      role: "JCOM President",
-      imageUrl: "/team/rajamoorthy2.jpg",
-      bio: "Rajamoorthy R is a dynamic and visionary leader who drives JCOM's mission of empowering business leaders and building communities across the region.",
-      phone: "+91 98765 43210",
-      whatsapp: "+91 98765 43210",
-      domain: "Corporate Leadership & Strategic Growth",
-      location: "JCOM HQ, Tamil Nadu, India",
-    },
-    {
-      name: "Sundar Rajan",
-      role: "Vice President",
-      imageUrl: "/team/virtual-photoshoot-2 (6) - sundar rajan.jpg",
-      bio: "Sundar Rajan brings strong leadership and strategic vision to JCOM, supporting business growth and community development initiatives.",
-      phone: "+91 98765 43211",
-      whatsapp: "+91 98765 43211",
-      domain: "Community Development & Networking",
-      location: "JCOM Regional Office, India",
-    },
-    {
-      name: "Gayathri T.",
-      role: "Secretary",
-      imageUrl: "/team/Screenshot_20251201_210947_Photos - Gayathri Thirupathi.jpg",
-      bio: "Gayathri Thirupathi is a committed professional who excels in organizational management and serves as a vital bridge within the JCOM network.",
-      phone: "+91 98765 43212",
-      whatsapp: "+91 98765 43212",
-      domain: "Organizational Management & Coordination",
-      location: "JCOM Administration, India",
-    },
-    {
-      name: "Loganathan G",
-      role: "Treasurer",
-      imageUrl: "/team/LOGU assistant coach - JFD.G LOGANATHAN.png",
-      bio: "JFD.G Loganathan manages JCOM's financial operations with precision and integrity, ensuring fiscal responsibility across all initiatives.",
-      phone: "+91 98765 43213",
-      whatsapp: "+91 98765 43213",
-      domain: "Financial Management & Fiscal Control",
-      location: "Finance Dept, JCOM, India",
-    },
-    {
-      name: "Jeeth Pandien",
-      role: "Board Member",
-      imageUrl: "/team/JEETH PASSPOT SIZE PHOTO - Jeeth Pandien.jpg",
-      bio: "Jeeth Pandien is an energetic board member who actively participates in JCOM's events and drives strategic committee initiatives.",
-      phone: "+91 98765 43214",
-      whatsapp: "+91 98765 43214",
-      domain: "Strategic Committee Leadership",
-      location: "JCOM Board, India",
-    },
-    {
-      name: "Aarojin Raja",
-      role: "Committee Head",
-      imageUrl: "/team/IMG_20260405_121710_263~2 - Aarojin Infant Raja.png",
-      bio: "Aarojin Infant Raja leads key JCOM committees with dedication, focusing on business development and community engagement.",
-      phone: "+91 98765 43215",
-      whatsapp: "+91 98765 43215",
-      domain: "Business Dev & Community Engagement",
-      location: "JCOM Projects, India",
-    },
-    {
-      name: "Maruthi S.",
-      role: "Board Member",
-      imageUrl: "/team/Screenshot_20260301_061402_Gallery - Maruthi Sivakasi.jpg",
-      bio: "Maruthi Sivakasi is a dedicated JCOM board member contributing to leadership programs and regional business networking efforts.",
-      phone: "+91 98765 43216",
-      whatsapp: "+91 98765 43216",
-      domain: "Leadership Programs & Networking",
-      location: "JCOM Sivakasi, India",
-    },
-    {
-      name: "Pon Vijayan",
-      role: "Committee Head",
-      imageUrl: "/team/e64633ab-76d4-4755-b5c1-51feede74430 - Pon Vijayan.jpeg",
-      bio: "Pon Vijayan is a proactive JCOM committee head who channels his entrepreneurial spirit into driving impactful business and community projects.",
-      phone: "+91 98765 43217",
-      whatsapp: "+91 98765 43217",
-      domain: "Entrepreneurial Ventures & Projects",
-      location: "JCOM Tuticorin, India",
-    },
-    {
-      name: "Aravind Gowsik",
-      role: "Executive Member",
-      imageUrl: "/team/60d2995a-584f-4cdd-84a8-4f8e0e0dab4a - Aravind Gowsik. (1).jpeg",
-      bio: "Aravind Gowsik is a strategic thinker and dedicated member of JCOM, contributing to various organizational initiatives and business expansion projects.",
-      phone: "+91 98765 43218",
-      whatsapp: "+91 98765 43218",
-      domain: "Strategic Planning & Operations",
-      location: "JCOM Operations, India",
-    },
-  ];
-
-  // List of tables for the "Zone 18 Table Names" section
-  const zoneTables = [
-    { name: "JCOM L Ambasamudram 1.0", phone: "+919876543210", email: "info@jcom.org" },
-    { name: "JCOM L Kadayanallur 1.0", phone: "+919876543210", email: "info@jcom.org" },
-    { name: "JCOM L Kovilpatti 1.0", phone: "+919876543210", email: "info@jcom.org" },
-    { name: "JCOM L Marthandam 1.0", phone: "+919876543210", email: "info@jcom.org" },
-    { name: "JCOM L Nagercoil 1.0", phone: "+919876543210", email: "info@jcom.org" },
-    { name: "JCOM L Rajapalayam 1.0", phone: "+919876543210", email: "info@jcom.org" },
-    { name: "JCOM L Sattur 1.0", phone: "+919876543210", email: "info@jcom.org" },
-    { name: "JCOM L Sivakasi 1.0", phone: "+919876543210", email: "info@jcom.org" },
-    { name: "JCOM L Sivakasi 2.0", phone: "+919876543210", email: "info@jcom.org" },
-    { name: "JCOM L Sivakasi 3.0", phone: "+919876543210", email: "info@jcom.org" },
-    { name: "JCOM L Tenkasi 1.0", phone: "+919876543210", email: "info@jcom.org" },
-    { name: "JCOM L Tirunelveli 1.0", phone: "+919876543210", email: "info@jcom.org" },
-    { name: "JCOM L Tuticorin 1.0", phone: "+919876543210", email: "info@jcom.org" },
-    { name: "JCOM L Virudhunagar 1.0", phone: "+919876543210", email: "info@jcom.org" },
-    { name: "JCOM V Virudhunagar 2.0", phone: "+919876543210", email: "info@jcom.org" },
-  ];
 
   return (
     <>
@@ -417,40 +319,38 @@ export default async function TeamPage() {
 
           {/* CHAIRMAN ROW */}
           <div className="row justify-content-center g-4 mb-5" id="chairman-row">
-            {/* 1. Zone Chairman Card */}
-            <div className="col-lg-4 col-md-6 col-12">
-              {dbChairman ? (
-                // Database Chairman Card
+            {dbChairmen.map((chairman) => (
+              <div className="col-lg-4 col-md-6 col-12" key={chairman.id}>
                 <div
                   className="team-card-premium accent-top"
                   style={{ borderTop: "5px solid #f59e0b" }}
                   data-bs-toggle="modal"
                   data-bs-target="#bioModal"
-                  data-name={dbChairman.name}
-                  data-role={dbChairman.role}
-                  data-img={dbChairman.imageUrl}
-                  data-bio={dbChairman.bio || "JCOM Zone Chairman."}
+                  data-name={chairman.name}
+                  data-role={chairman.role}
+                  data-img={chairman.imageUrl}
+                  data-bio={chairman.bio || "JCOM Zone Chairman."}
                 >
                   <div className="card-header-top">
                     <div className="profile-box">
-                      <img src={dbChairman.imageUrl} alt={dbChairman.name} />
+                      <img src={chairman.imageUrl} alt={chairman.name} />
                     </div>
                     <div className="header-info">
                       <span className="status-badge" style={{ background: "#fef3c7", color: "#d97706" }}>
                         <span className="status-dot" style={{ background: "#d97706" }}></span> Zone Chairman
                       </span>
-                      <h3 className="member-name">{dbChairman.name}</h3>
-                      <span className="member-company" style={{ color: "#d97706" }}>{dbChairman.role}</span>
+                      <h3 className="member-name">{chairman.name}</h3>
+                      <span className="member-company" style={{ color: "#d97706" }}>{chairman.role}</span>
                     </div>
 
                     <div className="card-quick-actions">
-                      {dbChairman.phone && (
-                        <a href={`tel:${dbChairman.phone}`} className="action-icon-btn btn-call-mini" style={{ background: "#d97706" }} title="Call">
+                      {chairman.phone && (
+                        <a href={`tel:${chairman.phone}`} className="action-icon-btn btn-call-mini" style={{ background: "#d97706" }} title="Call">
                           <i className="bi bi-telephone-fill"></i>
                         </a>
                       )}
-                      {dbChairman.whatsapp && (
-                        <a href={`https://wa.me/${dbChairman.whatsapp.replace(/\+/g, '').replace(/ /g, '')}`} className="action-icon-btn btn-whatsapp-mini" title="WhatsApp">
+                      {chairman.whatsapp && (
+                        <a href={`https://wa.me/${chairman.whatsapp.replace(/\+/g, '').replace(/ /g, '')}`} className="action-icon-btn btn-whatsapp-mini" title="WhatsApp">
                           <i className="bi bi-whatsapp"></i>
                         </a>
                       )}
@@ -475,95 +375,41 @@ export default async function TeamPage() {
                     </button>
                   </div>
                 </div>
-              ) : (
-                // Static Fallback Chairman Card
-                <div
-                  className="team-card-premium accent-top"
-                  style={{ borderTop: "5px solid #f59e0b" }}
-                  data-bs-toggle="modal"
-                  data-bs-target="#bioModal"
-                  data-name="Chairman Name"
-                  data-role="Chairman"
-                  data-img="https://placehold.co/400x400/eeeeee/333333?text=Chairman+Photo"
-                  data-bio="Our Chairman leads with vision and purpose, guiding the JCOM Zone towards unparalleled growth and excellence."
-                >
-                  <div className="card-header-top">
-                    <div className="profile-box">
-                      <img src="https://placehold.co/400x400/eeeeee/333333?text=Chairman+Photo" alt="Chairman" />
-                    </div>
-                    <div className="header-info">
-                      <span className="status-badge" style={{ background: "#fef3c7", color: "#d97706" }}>
-                        <span className="status-dot" style={{ background: "#d97706" }}></span> Zone Chairman
-                      </span>
-                      <h3 className="member-name">Chairman Name</h3>
-                      <span className="member-company" style={{ color: "#d97706" }}>JCOM Chairman</span>
-                    </div>
+              </div>
+            ))}
 
-                    <div className="card-quick-actions">
-                      <a href="tel:+" className="action-icon-btn btn-call-mini" style={{ background: "#d97706" }} title="Call">
-                        <i className="bi bi-telephone-fill"></i>
-                      </a>
-                      <a href="https://wa.me/+" className="action-icon-btn btn-whatsapp-mini" title="WhatsApp">
-                        <i className="bi bi-whatsapp"></i>
-                      </a>
-                      <a href="mailto:info@jcom.org" className="action-icon-btn btn-email-mini" style={{ background: "#ea4335" }} title="Email">
-                        <i className="bi bi-envelope-fill"></i>
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className="card-body-mid">
-                    <span className="domain-label" style={{ color: "#d97706" }}>Business Domain</span>
-                    <p className="domain-text">Zone Governance & Strategic Vision</p>
-                    <div className="location-text">
-                      <i className="bi bi-geo-alt-fill"></i>
-                      <span>JCOM Zone, India</span>
-                    </div>
-                  </div>
-
-                  <div className="card-footer-btns border-top-0 pt-0 pb-4 px-4 bg-transparent mt-auto" style={{ display: "block" }}>
-                    <button className="btn btn-primary w-100 rounded-pill fw-bold" style={{ background: "linear-gradient(90deg, #d97706, #b45309), #d97706", border: "none", padding: "10px 0" }}>
-                      View Profile <i className="bi bi-arrow-right ms-2"></i>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* 2. Advisory / Past Chairman Card */}
-            <div className="col-lg-4 col-md-6 col-12">
-              {dbPastChairman ? (
-                // Database Past Chairman Card
+            {dbPastChairmen.map((pastChairman) => (
+              <div className="col-lg-4 col-md-6 col-12" key={pastChairman.id}>
                 <div
                   className="team-card-premium accent-top"
                   style={{ borderTop: "5px solid #64748b" }}
                   data-bs-toggle="modal"
                   data-bs-target="#bioModal"
-                  data-name={dbPastChairman.name}
-                  data-role={dbPastChairman.role}
-                  data-img={dbPastChairman.imageUrl}
-                  data-bio={dbPastChairman.bio || "Our Past Chairman provides invaluable advice and mentorship."}
+                  data-name={pastChairman.name}
+                  data-role={pastChairman.role}
+                  data-img={pastChairman.imageUrl}
+                  data-bio={pastChairman.bio || "Our Past Chairman provides invaluable advice and mentorship."}
                 >
                   <div className="card-header-top">
                     <div className="profile-box">
-                      <img src={dbPastChairman.imageUrl} alt={dbPastChairman.name} />
+                      <img src={pastChairman.imageUrl} alt={pastChairman.name} />
                     </div>
                     <div className="header-info">
                       <span className="status-badge" style={{ background: "#f1f5f9", color: "#475569" }}>
                         <span className="status-dot" style={{ background: "#64748b" }}></span> Advisory Role
                       </span>
-                      <h3 className="member-name">{dbPastChairman.name}</h3>
-                      <span className="member-company" style={{ color: "#475569" }}>{dbPastChairman.role}</span>
+                      <h3 className="member-name">{pastChairman.name}</h3>
+                      <span className="member-company" style={{ color: "#475569" }}>{pastChairman.role}</span>
                     </div>
 
                     <div className="card-quick-actions">
-                      {dbPastChairman.phone && (
-                        <a href={`tel:${dbPastChairman.phone}`} className="action-icon-btn btn-call-mini" style={{ background: "#64748b" }} title="Call">
+                      {pastChairman.phone && (
+                        <a href={`tel:${pastChairman.phone}`} className="action-icon-btn btn-call-mini" style={{ background: "#64748b" }} title="Call">
                           <i className="bi bi-telephone-fill"></i>
                         </a>
                       )}
-                      {dbPastChairman.whatsapp && (
-                        <a href={`https://wa.me/${dbPastChairman.whatsapp.replace(/\+/g, '').replace(/ /g, '')}`} className="action-icon-btn btn-whatsapp-mini" title="WhatsApp">
+                      {pastChairman.whatsapp && (
+                        <a href={`https://wa.me/${pastChairman.whatsapp.replace(/\+/g, '').replace(/ /g, '')}`} className="action-icon-btn btn-whatsapp-mini" title="WhatsApp">
                           <i className="bi bi-whatsapp"></i>
                         </a>
                       )}
@@ -588,173 +434,56 @@ export default async function TeamPage() {
                     </button>
                   </div>
                 </div>
-              ) : (
-                // Static Fallback Past Chairman Card
-                <div
-                  className="team-card-premium accent-top"
-                  style={{ borderTop: "5px solid #64748b" }}
-                  data-bs-toggle="modal"
-                  data-bs-target="#bioModal"
-                  data-name="Past Chairman Name"
-                  data-role="Past Chairman"
-                  data-img="https://placehold.co/400x400/eeeeee/333333?text=Past+Chairman"
-                  data-bio="Our Past Chairman laid the strong foundation for JCOM's current success and continues to provide valuable mentorship."
-                >
-                  <div className="card-header-top">
-                    <div className="profile-box">
-                      <img src="https://placehold.co/400x400/eeeeee/333333?text=Past+Chairman" alt="Past Chairman" />
-                    </div>
-                    <div className="header-info">
-                      <span className="status-badge" style={{ background: "#f1f5f9", color: "#475569" }}>
-                        <span className="status-dot" style={{ background: "#64748b" }}></span> Advisory Role
-                      </span>
-                      <h3 className="member-name">Past Chairman</h3>
-                      <span className="member-company" style={{ color: "#475569" }}>JCOM Past Chairman</span>
-                    </div>
-
-                    <div className="card-quick-actions">
-                      <a href="tel:+" className="action-icon-btn btn-call-mini" style={{ background: "#64748b" }} title="Call">
-                        <i className="bi bi-telephone-fill"></i>
-                      </a>
-                      <a href="https://wa.me/+" className="action-icon-btn btn-whatsapp-mini" style={{ background: "#10b981" }} title="WhatsApp">
-                        <i className="bi bi-whatsapp"></i>
-                      </a>
-                      <a href="mailto:info@jcom.org" className="action-icon-btn btn-email-mini" style={{ background: "#ea4335" }} title="Email">
-                        <i className="bi bi-envelope-fill"></i>
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className="card-body-mid">
-                    <span className="domain-label" style={{ color: "#475569" }}>Business Domain</span>
-                    <p className="domain-text">Advisory & Long-Term Strategy</p>
-                    <div className="location-text">
-                      <i className="bi bi-geo-alt-fill"></i>
-                      <span>JCOM Zone, India</span>
-                    </div>
-                  </div>
-
-                  <div className="card-footer-btns border-top-0 pt-0 pb-4 px-4 bg-transparent mt-auto" style={{ display: "block" }}>
-                    <button className="btn btn-primary w-100 rounded-pill fw-bold" style={{ background: "linear-gradient(90deg, #64748b, #475569), #64748b", border: "none", padding: "10px 0" }}>
-                      View Profile <i className="bi bi-arrow-right ms-2"></i>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+              </div>
+            ))}
           </div>
 
-          <h2 className="team2-title mt-3 pt-3">OUR TABLE</h2>
+          <h2 className="team2-title mt-3 pt-3">OUR ZGB</h2>
 
           {/* TABLE MEMBERS ROW */}
           <div className="row justify-content-center g-4 mb-3" id="governing-board-row">
-            {dbBoardMembers.length > 0
-              ? // Database Board Members
-                dbBoardMembers.map((member) => {
-                  const roleLower = member.role.toLowerCase();
-                  const isPresident = roleLower.includes("president") && !roleLower.includes("vice");
-                  const borderStyle = isPresident
-                    ? "5px solid #10b981"
-                    : "1px solid rgba(226, 232, 240, 0.6)";
+            {dbBoardMembers.length > 0 ? (
+              dbBoardMembers.map((member) => {
+                const roleLower = member.role.toLowerCase();
+                const isPresident = roleLower.includes("president") && !roleLower.includes("vice");
+                const borderStyle = isPresident
+                  ? "5px solid #10b981"
+                  : "1px solid rgba(226, 232, 240, 0.6)";
 
-                  return (
-                    <div className="col-lg-4 col-md-6 col-12" key={member.id}>
-                      <div
-                        className="team-card-premium"
-                        style={{ borderTop: borderStyle }}
-                        data-bs-toggle="modal"
-                        data-bs-target="#bioModal"
-                        data-name={member.name}
-                        data-role={member.role}
-                        data-img={member.imageUrl}
-                        data-bio={member.bio || "Active JCOM Board Member."}
-                      >
-                        <div className="card-header-top">
-                          <div className="profile-box">
-                            <img
-                              src={member.imageUrl}
-                              alt={member.name}
-                            />
-                          </div>
-                          <div className="header-info">
-                            <span className="status-badge">
-                              <span className="status-dot"></span> Active Member
-                            </span>
-                            <h3 className="member-name">{member.name}</h3>
-                            <span className="member-company">{member.role}</span>
-                          </div>
-
-                          <div className="card-quick-actions">
-                            {member.phone && (
-                              <a href={`tel:${member.phone}`} className="action-icon-btn btn-call-mini" title="Call">
-                                <i className="bi bi-telephone-fill"></i>
-                              </a>
-                            )}
-                            {member.whatsapp && (
-                              <a
-                                href={`https://wa.me/${member.whatsapp.replace(/\+/g, "").replace(/ /g, "")}`}
-                                className="action-icon-btn btn-whatsapp-mini"
-                                title="WhatsApp"
-                              >
-                                <i className="bi bi-whatsapp"></i>
-                              </a>
-                            )}
-                          </div>
+                return (
+                  <div className="col-lg-4 col-md-6 col-12" key={member.id}>
+                    <div
+                      className="team-card-premium"
+                      style={{ borderTop: borderStyle }}
+                      data-bs-toggle="modal"
+                      data-bs-target="#bioModal"
+                      data-name={member.name}
+                      data-role={member.role}
+                      data-img={member.imageUrl}
+                      data-bio={member.bio || "Active JCOM Board Member."}
+                    >
+                      <div className="card-header-top">
+                        <div className="profile-box">
+                          <img
+                            src={member.imageUrl}
+                            alt={member.name}
+                          />
+                        </div>
+                        <div className="header-info">
+                          <span className="status-badge">
+                            <span className="status-dot"></span> Active Member
+                          </span>
+                          <h3 className="member-name">{member.name}</h3>
+                          <span className="member-company">{member.role}</span>
                         </div>
 
-                        <div className="card-body-mid">
-                          <span className="domain-label">Business Domain</span>
-                          <p className="domain-text">
-                            {member.bio
-                              ? member.bio.substring(0, 50) + (member.bio.length > 50 ? "..." : "")
-                              : "Leadership & Business Development"}
-                          </p>
-                          <div className="location-text">
-                            <i className="bi bi-geo-alt-fill"></i>
-                            <span>JCOM Zone, India</span>
-                          </div>
-                        </div>
-
-                        <div className="card-footer-btns border-top-0 pt-0 pb-4 px-4 bg-transparent mt-auto" style={{ display: "block" }}>
-                          <button className="btn btn-primary w-100 rounded-pill fw-bold" style={{ background: "linear-gradient(90deg, #1da1f2, #0077b5), #1da1f2", border: "none", padding: "10px 0" }}>
-                            View Profile <i className="bi bi-arrow-right ms-2"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })
-              : // Static Fallback Board Members
-                staticBoardMembers.map((member, index) => {
-                  const borderStyle = index % 2 === 0 ? "accent-top" : "accent-bottom";
-
-                  return (
-                    <div className="col-lg-4 col-md-6 col-12" key={index}>
-                      <div
-                        className={`team-card-premium ${borderStyle}`}
-                        data-bs-toggle="modal"
-                        data-bs-target="#bioModal"
-                        data-name={member.name}
-                        data-role={member.role}
-                        data-img={member.imageUrl}
-                        data-bio={member.bio}
-                      >
-                        <div className="card-header-top">
-                          <div className="profile-box">
-                            <img src={member.imageUrl} alt={member.name} />
-                          </div>
-                          <div className="header-info">
-                            <span className="status-badge">
-                              <span className="status-dot"></span> Active Member
-                            </span>
-                            <h3 className="member-name">{member.name}</h3>
-                            <span className="member-company">{member.role}</span>
-                          </div>
-
-                          <div className="card-quick-actions">
+                        <div className="card-quick-actions">
+                          {member.phone && (
                             <a href={`tel:${member.phone}`} className="action-icon-btn btn-call-mini" title="Call">
                               <i className="bi bi-telephone-fill"></i>
                             </a>
+                          )}
+                          {member.whatsapp && (
                             <a
                               href={`https://wa.me/${member.whatsapp.replace(/\+/g, "").replace(/ /g, "")}`}
                               className="action-icon-btn btn-whatsapp-mini"
@@ -762,27 +491,37 @@ export default async function TeamPage() {
                             >
                               <i className="bi bi-whatsapp"></i>
                             </a>
-                          </div>
-                        </div>
-
-                        <div className="card-body-mid">
-                          <span className="domain-label">Business Domain</span>
-                          <p className="domain-text">{member.domain}</p>
-                          <div className="location-text">
-                            <i className="bi bi-geo-alt-fill"></i>
-                            <span>{member.location}</span>
-                          </div>
-                        </div>
-
-                        <div className="card-footer-btns border-top-0 pt-0 pb-4 px-4 bg-transparent mt-auto" style={{ display: "block" }}>
-                          <button className="btn btn-primary w-100 rounded-pill fw-bold" style={{ background: "linear-gradient(90deg, #1da1f2, #0077b5), #1da1f2", border: "none", padding: "10px 0" }}>
-                            View Profile <i className="bi bi-arrow-right ms-2"></i>
-                          </button>
+                          )}
                         </div>
                       </div>
+
+                      <div className="card-body-mid">
+                        <span className="domain-label">Business Domain</span>
+                        <p className="domain-text">
+                          {member.bio
+                            ? member.bio.substring(0, 50) + (member.bio.length > 50 ? "..." : "")
+                            : "Leadership & Business Development"}
+                        </p>
+                        <div className="location-text">
+                          <i className="bi bi-geo-alt-fill"></i>
+                          <span>JCOM Zone, India</span>
+                        </div>
+                      </div>
+
+                      <div className="card-footer-btns border-top-0 pt-0 pb-4 px-4 bg-transparent mt-auto" style={{ display: "block" }}>
+                        <button className="btn btn-primary w-100 rounded-pill fw-bold" style={{ background: "linear-gradient(90deg, #1da1f2, #0077b5), #1da1f2", border: "none", padding: "10px 0" }}>
+                          View Profile <i className="bi bi-arrow-right ms-2"></i>
+                        </button>
+                      </div>
                     </div>
-                  );
-                })}
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-center py-5 text-muted col-12">
+                No board members found in database.
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -792,30 +531,44 @@ export default async function TeamPage() {
         <div className="container" style={{ maxWidth: "1400px" }}>
           <div className="text-center mb-5">
             <h2 className="fw-bold" style={{ fontSize: "40px", color: "#0f172a" }}>ZONE 18 TABLE NAMES</h2>
-            <p className="text-muted">Explore our network of 15 dynamic tables across the zone</p>
+            <p className="text-muted">Explore our network of dynamic tables across the zone</p>
           </div>
 
           <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
-            {zoneTables.map((table, idx) => (
-              <div className="col" key={idx}>
-                <div className="table-name-card">
-                  <div className="card-icon"><i className="bi bi-diagram-3-fill"></i></div>
-                  <h4 className="t-name">{table.name}</h4>
-                  <div className="d-flex justify-content-center gap-2 mb-3">
-                    <a href={`tel:${table.phone}`} className="btn btn-sm btn-outline-primary rounded-circle" title="Call">
-                      <i className="bi bi-telephone-fill"></i>
-                    </a>
-                    <a href={`https://wa.me/${table.phone}`} className="btn btn-sm btn-outline-success rounded-circle" title="WhatsApp">
-                      <i className="bi bi-whatsapp"></i>
-                    </a>
-                    <a href={`mailto:${table.email}`} className="btn btn-sm btn-outline-danger rounded-circle" title="Email">
-                      <i className="bi bi-envelope-fill"></i>
-                    </a>
+            {dbTables.length > 0 ? (
+              dbTables.map((table) => (
+                <div className="col" key={table.id}>
+                  <div className="table-name-card">
+                    <div className="card-icon"><i className="bi bi-diagram-3-fill"></i></div>
+                    <h4 className="t-name">{table.name}</h4>
+                    <div className="d-flex justify-content-center gap-2 mb-3">
+                      {table.phone && (
+                        <>
+                          <a href={`tel:${table.phone}`} className="btn btn-sm btn-outline-primary rounded-circle" title="Call">
+                            <i className="bi bi-telephone-fill"></i>
+                          </a>
+                          <a href={`https://wa.me/${table.phone.replace(/[^0-9]/g, '')}`} className="btn btn-sm btn-outline-success rounded-circle" title="WhatsApp">
+                            <i className="bi bi-whatsapp"></i>
+                          </a>
+                        </>
+                      )}
+                      {table.email && (
+                        <a href={`mailto:${table.email}`} className="btn btn-sm btn-outline-danger rounded-circle" title="Email">
+                          <i className="bi bi-envelope-fill"></i>
+                        </a>
+                      )}
+                    </div>
+                    <Link href={`/team/members?table=${encodeURIComponent(table.name)}`} className="view-table-link">
+                      View Members <i className="bi bi-arrow-right ms-1"></i>
+                    </Link>
                   </div>
-                  <a href="#" className="view-table-link">View Members <i className="bi bi-arrow-right ms-1"></i></a>
                 </div>
+              ))
+            ) : (
+              <div className="text-center w-100 py-5 text-muted col-12">
+                No JCOM Tables found in database.
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>

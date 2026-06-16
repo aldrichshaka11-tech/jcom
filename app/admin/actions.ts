@@ -37,10 +37,12 @@ export async function getDashboardData() {
     const events = await db.event.findMany({ orderBy: { date: "desc" } });
     const applications = await db.membershipApplication.findMany({ orderBy: { timestamp: "desc" } });
     const contacts = await db.contactQuery.findMany({ orderBy: { timestamp: "desc" } });
+    const tableMembers = await db.tableMember.findMany({ orderBy: { createdAt: "desc" } });
+    const jcomTables = await db.jcomTable.findMany({ orderBy: { name: "asc" } });
 
     return {
       success: true,
-      data: { team, events, applications, contacts },
+      data: { team, events, applications, contacts, tableMembers, jcomTables },
     };
   } catch (error) {
     console.error("Dashboard fetch error:", error);
@@ -49,7 +51,7 @@ export async function getDashboardData() {
 }
 
 // Delete item generic action
-export async function deleteItem(type: "TeamMembers" | "Events" | "membership" | "contact", id: string) {
+export async function deleteItem(type: "TeamMembers" | "Events" | "membership" | "contact" | "tableMember" | "jcomTable", id: string) {
   try {
     if (type === "TeamMembers") {
       await db.teamMember.delete({ where: { id } });
@@ -59,10 +61,15 @@ export async function deleteItem(type: "TeamMembers" | "Events" | "membership" |
       await db.membershipApplication.delete({ where: { id } });
     } else if (type === "contact") {
       await db.contactQuery.delete({ where: { id } });
+    } else if (type === "tableMember") {
+      await db.tableMember.delete({ where: { id } });
+    } else if (type === "jcomTable") {
+      await db.jcomTable.delete({ where: { id } });
     }
 
     revalidatePath("/team");
     revalidatePath("/events");
+    revalidatePath("/team/members");
     return { success: true };
   } catch (error) {
     console.error(`Error deleting item of type ${type}:`, error);
@@ -162,3 +169,137 @@ export async function addEvent(formData: FormData) {
     return { success: false, error: error.message || "Failed to create event." };
   }
 }
+
+// Update Team Member Action
+export async function updateTeamMember(formData: FormData) {
+  try {
+    const id = formData.get("id") as string;
+    const name = formData.get("name") as string;
+    const role = formData.get("role") as string;
+    const phone = formData.get("phone") as string;
+    const whatsapp = formData.get("whatsapp") as string;
+    const bio = formData.get("bio") as string;
+    const imageFile = formData.get("imageFile") as File | null;
+    let imageUrl = formData.get("imageUrl") as string;
+
+    const existing = await db.teamMember.findUnique({ where: { id } });
+    if (!existing) {
+      return { success: false, error: "Team member not found." };
+    }
+
+    // Handle direct image file upload
+    if (imageFile && imageFile.size > 0 && imageFile.name) {
+      imageUrl = await saveUploadedFile(imageFile);
+    }
+
+    await db.teamMember.update({
+      where: { id },
+      data: {
+        name,
+        role,
+        phone: phone || null,
+        whatsapp: whatsapp || null,
+        bio: bio || null,
+        imageUrl: imageUrl || existing.imageUrl,
+      },
+    });
+
+    revalidatePath("/team");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error updating team member:", error);
+    return { success: false, error: error.message || "Failed to update team member." };
+  }
+}
+
+// Update Table Member Action
+export async function updateTableMember(formData: FormData) {
+  try {
+    const id = formData.get("id") as string;
+    const name = formData.get("name") as string;
+    const mobile = formData.get("mobile") as string;
+    const address = formData.get("address") as string;
+    const business = formData.get("business") as string;
+    const tableName = formData.get("tableName") as string;
+
+    if (!id || !name || !mobile || !address || !business || !tableName) {
+      return { success: false, error: "All fields are required." };
+    }
+
+    await db.tableMember.update({
+      where: { id },
+      data: {
+        name,
+        mobile,
+        address,
+        business,
+        tableName,
+      },
+    });
+
+    revalidatePath("/team");
+    revalidatePath("/team/members");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error updating table member:", error);
+    return { success: false, error: error.message || "Failed to update table member." };
+  }
+}
+
+// Add JCOM Table Action
+export async function addJcomTable(formData: FormData) {
+  try {
+    const name = formData.get("name") as string;
+    const phone = formData.get("phone") as string;
+    const email = formData.get("email") as string;
+
+    if (!name || !phone || !email) {
+      return { success: false, error: "All fields are required." };
+    }
+
+    await db.jcomTable.create({
+      data: {
+        name,
+        phone,
+        email,
+      },
+    });
+
+    revalidatePath("/team");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error creating JCOM table:", error);
+    return { success: false, error: error.message || "Failed to create JCOM table." };
+  }
+}
+
+// Update JCOM Table Action
+export async function updateJcomTable(formData: FormData) {
+  try {
+    const id = formData.get("id") as string;
+    const name = formData.get("name") as string;
+    const phone = formData.get("phone") as string;
+    const email = formData.get("email") as string;
+
+    if (!id || !name || !phone || !email) {
+      return { success: false, error: "All fields are required." };
+    }
+
+    await db.jcomTable.update({
+      where: { id },
+      data: {
+        name,
+        phone,
+        email,
+      },
+    });
+
+    revalidatePath("/team");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error updating JCOM table:", error);
+    return { success: false, error: error.message || "Failed to update JCOM table." };
+  }
+}
+
+
