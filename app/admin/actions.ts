@@ -9,7 +9,7 @@ import { uploadToCloudinary } from "@/lib/cloudinary";
 // Helper to save uploaded file (Cloudinary in production, local storage in development)
 async function saveUploadedFile(file: File): Promise<string> {
   // If Cloudinary credentials are set up on Render, upload to the cloud
-  if (process.env.CLOUDINARY_CLOUD_NAME) {
+  if (process.env.CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_URL) {
     try {
       return await uploadToCloudinary(file);
     } catch (error) {
