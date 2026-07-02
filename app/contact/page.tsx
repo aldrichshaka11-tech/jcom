@@ -410,7 +410,7 @@ export default function ContactPage() {
               <div className="contact-icon"><i className="fas fa-phone"></i></div>
               <div className="contact-info-content">
                 <h6>Call Us 24/7</h6>
-                <p>+91 98765 43210</p>
+                <p>+91 9003948500</p>
               </div>
             </div>
             
@@ -418,7 +418,7 @@ export default function ContactPage() {
               <div className="contact-icon"><i className="fas fa-envelope"></i></div>
               <div className="contact-info-content">
                 <h6>Work with us</h6>
-                <p>info@jcom.org</p>
+                <p>zone18jcom@gmail.com</p>
               </div>
             </div>
             
@@ -474,12 +474,12 @@ export default function ContactPage() {
             <div className="map-info-card">
               <i className="bi bi-envelope-fill"></i>
               <h4>Email Support</h4>
-              <p>info@jcom.org<br />support@jcom.org</p>
+              <p>zone18jcom@gmail.com</p>
             </div>
             <div className="map-info-card">
               <i className="bi bi-telephone-fill"></i>
               <h4>Phone Number</h4>
-              <p>+91 98765 43210<br />Mon-Sat: 9am - 6pm</p>
+              <p>+91 9003948500<br />Mon-Sat: 9am - 6pm</p>
             </div>
           </div>
         </div>

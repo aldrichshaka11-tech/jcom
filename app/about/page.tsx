@@ -25,8 +25,7 @@ export default function About() {
                   <i className="bi bi-eye"></i> Vision
                 </h2>
                 <p className="mv-desc">
-                  Our vision is to work with business to create a just and sustainable world 
-                  in which all people can thrive on a healthy planet.
+                 To be the Leading Chamber of Commerce of Young JCI Entrepreneurs
                 </p>
               </div>
             </div>
@@ -37,8 +36,7 @@ export default function About() {
                   <i className="bi bi-bullseye"></i> Mission
                 </h2>
                 <p className="mv-desc">
-                  We are committed to creating an ecosystem that supports the growth of 
-                  sustainable business models with innovative resources and global networks.
+                  To provide Business Development opportunities that empower young Entrepreneurs towards Business Growth
                 </p>
               </div>
             </div>
@@ -150,6 +148,7 @@ export default function About() {
                   <div className="timeline-vertical-line d-none d-lg-block"></div>
                   <div className="timeline-circle">01</div>
                   
+                  
                   <div className="timeline-flip-box">
                     <div className="timeline-flip-inner">
                       <div className="timeline-flip-front">
@@ -160,7 +159,7 @@ export default function About() {
                       </div>
                     </div>
                   </div>
-
+                  <div className="timeline-badge">Week 1 - 100 min for 100 %</div>
                   <h4 className="timeline-item-title">Growth plan and Growth Call Meet</h4>
                   <p className="timeline-item-desc">Members will give and seek for business connections to each other as per need of other members</p>
                 </div>
@@ -171,6 +170,7 @@ export default function About() {
                 <div className="timeline-item">
                   <div className="timeline-vertical-line d-none d-lg-block"></div>
                   <div className="timeline-circle">02</div>
+             
                   
                   <div className="timeline-flip-box">
                     <div className="timeline-flip-inner">
@@ -182,7 +182,7 @@ export default function About() {
                       </div>
                     </div>
                   </div>
-
+     <div className="timeline-badge">Week 2 - 100 min for 100 %</div>
                   <h4 className="timeline-item-title">Solution Board meet</h4>
                   <p className="timeline-item-desc">Any 5 business challenges of members will be discussed, and solutions board will provide solutions</p>
                 </div>
@@ -194,6 +194,7 @@ export default function About() {
                   <div className="timeline-vertical-line d-none d-lg-block"></div>
                   <div className="timeline-circle">03</div>
                   
+                  
                   <div className="timeline-flip-box">
                     <div className="timeline-flip-inner">
                       <div className="timeline-flip-front">
@@ -204,7 +205,7 @@ export default function About() {
                       </div>
                     </div>
                   </div>
-
+<div className="timeline-badge">Week 3 - 100 min for 100 %</div>
                   <h4 className="timeline-item-title">Learning meet</h4>
                   <p className="timeline-item-desc">Audio based learning meeting with subject expert/consultant to sharpen skills and gain knowledge</p>
                 </div>
@@ -216,6 +217,7 @@ export default function About() {
                   <div className="timeline-vertical-line d-none d-lg-block"></div>
                   <div className="timeline-circle">04</div>
                   
+                  
                   <div className="timeline-flip-box">
                     <div className="timeline-flip-inner">
                       <div className="timeline-flip-front">
@@ -226,8 +228,8 @@ export default function About() {
                       </div>
                     </div>
                   </div>
-
-                  <h4 className="timeline-item-title">Cross Business Meet</h4>
+<div className="timeline-badge">Week 4 - 100 min for 100 %</div>
+                  <h4 className="timeline-item-title">Strategic Partner</h4>
                   <p className="timeline-item-desc">It will be joint meet with other JCOM Table to explore the opportunity for more business connections</p>
                 </div>
               </div>
