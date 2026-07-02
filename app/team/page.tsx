@@ -362,7 +362,9 @@ export default async function TeamPage() {
 
                   <div className="card-body-mid">
                     <span className="domain-label" style={{ color: "#d97706" }}>Business Domain</span>
-                    <p className="domain-text">Zone Governance & Strategic Vision</p>
+                    <p className="domain-text">
+                      {chairman.bio ? chairman.bio.substring(0, 50) + (chairman.bio.length > 50 ? "..." : "") : "Zone Governance & Strategic Vision"}
+                    </p>
                     <div className="location-text">
                       <i className="bi bi-geo-alt-fill"></i>
                       <span>JCOM Zone, India</span>
@@ -421,7 +423,9 @@ export default async function TeamPage() {
 
                   <div className="card-body-mid">
                     <span className="domain-label" style={{ color: "#475569" }}>Business Domain</span>
-                    <p className="domain-text">Advisory & Long-Term Strategy</p>
+                    <p className="domain-text">
+                      {pastChairman.bio ? pastChairman.bio.substring(0, 50) + (pastChairman.bio.length > 50 ? "..." : "") : "Advisory & Long-Term Strategy"}
+                    </p>
                     <div className="location-text">
                       <i className="bi bi-geo-alt-fill"></i>
                       <span>JCOM Zone, India</span>
