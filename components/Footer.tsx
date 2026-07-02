@@ -86,7 +86,7 @@ export default function Footer() {
           <p className="mb-0 fw-semibold text-white" style={{ fontSize: '0.95rem' }}>© Copyright 2026, All Rights Reserved by JCOM India</p>
       
           <p className="mb-0 text-white-50" style={{ fontSize: '0.95rem' }}>
-            Made with <span className="fw-bold text-white">Kaira Tecknowledge</span>
+            Made with <span className="fw-bold text-white">Kaira Technologies</span>
           </p>
         </div>
       </div>
