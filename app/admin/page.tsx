@@ -124,8 +124,9 @@ export default function AdminPage() {
     e.preventDefault();
     setSubmittingTeam(true);
 
-    if (memberLevel === "Zone 18 Member") {
-      const fd = new FormData();
+    try {
+      if (memberLevel === "Zone 18 Member") {
+        const fd = new FormData();
       fd.append("name", tableMemberForm.name);
       fd.append("mobile", tableMemberForm.mobile);
       fd.append("address", tableMemberForm.address);
@@ -221,7 +222,11 @@ export default function AdminPage() {
         }
       }
     }
-    setSubmittingTeam(false);
+    } catch (error: any) {
+      alert(error.message || "An error occurred during submission. (Possible 413 File Too Large)");
+    } finally {
+      setSubmittingTeam(false);
+    }
   };
 
   const resetMemberForm = () => {
@@ -271,8 +276,9 @@ export default function AdminPage() {
     e.preventDefault();
     setSubmittingEvent(true);
 
-    const fd = new FormData();
-    fd.append("title", eventForm.title);
+    try {
+      const fd = new FormData();
+      fd.append("title", eventForm.title);
     fd.append("category", eventForm.category);
     fd.append("date", eventForm.date);
     fd.append("time", eventForm.time);
@@ -313,7 +319,11 @@ export default function AdminPage() {
     } else {
       alert(result.error || "Failed to add event.");
     }
-    setSubmittingEvent(false);
+    } catch (error: any) {
+      alert(error.message || "An error occurred during submission. (Possible 413 File Too Large)");
+    } finally {
+      setSubmittingEvent(false);
+    }
   };
 
   const zoneTables = [
