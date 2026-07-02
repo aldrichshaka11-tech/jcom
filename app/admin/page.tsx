@@ -274,22 +274,23 @@ export default function AdminPage() {
 
   const handleEventSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const formTarget = e.currentTarget as HTMLFormElement;
     setSubmittingEvent(true);
 
     try {
       const fd = new FormData();
       fd.append("title", eventForm.title);
-    fd.append("category", eventForm.category);
-    fd.append("date", eventForm.date);
-    fd.append("time", eventForm.time);
-    fd.append("location", eventForm.location);
-    fd.append("actionUrl", eventForm.actionUrl);
-    fd.append("description", eventForm.description);
-    fd.append("imageUrl", eventForm.imageUrl);
-    if (eventFile) {
-      fd.append("imageFile", eventFile);
-    }
-    const rawFd = new FormData(e.currentTarget as HTMLFormElement);
+      fd.append("category", eventForm.category);
+      fd.append("date", eventForm.date);
+      fd.append("time", eventForm.time);
+      fd.append("location", eventForm.location);
+      fd.append("actionUrl", eventForm.actionUrl);
+      fd.append("description", eventForm.description);
+      fd.append("imageUrl", eventForm.imageUrl);
+      if (eventFile) {
+        fd.append("imageFile", eventFile);
+      }
+      const rawFd = new FormData(formTarget);
     const allGalleryFiles = rawFd.getAll("galleryFiles") as File[];
     allGalleryFiles.forEach((file) => {
       if (file && file.size > 0) {
@@ -1173,7 +1174,7 @@ export default function AdminPage() {
                                 </div>
                                 <div className="mb-3">
                                   <label className="admin-form-label">OR Photo URL</label>
-                                  <input type="url" className="form-control admin-form-control" placeholder="https://..." value={teamForm.imageUrl} onChange={(e) => setTeamForm({ ...teamForm, imageUrl: e.target.value })} />
+                                  <input type="text" className="form-control admin-form-control" placeholder="https://... or /uploads/..." value={teamForm.imageUrl} onChange={(e) => setTeamForm({ ...teamForm, imageUrl: e.target.value })} />
                                 </div>
                                 <div className="mb-3">
                                   <label className="admin-form-label">Bio / Business Domain</label>
@@ -1494,7 +1495,7 @@ export default function AdminPage() {
                             </div>
                             <div className="mb-3">
                               <label className="admin-form-label">OR Event Photo URL</label>
-                              <input type="url" className="form-control admin-form-control" placeholder="https://..." value={eventForm.imageUrl} onChange={(e) => setEventForm({ ...eventForm, imageUrl: e.target.value })} />
+                              <input type="text" className="form-control admin-form-control" placeholder="https://... or /uploads/..." value={eventForm.imageUrl} onChange={(e) => setEventForm({ ...eventForm, imageUrl: e.target.value })} />
                             </div>
                             <div className="mb-3">
                               <label className="admin-form-label">Action URL (Registration Google Form, etc.)</label>
