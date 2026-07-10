@@ -26,6 +26,9 @@ function MembersDirectoryContent() {
     });
   }, [tableName]);
 
+  const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+  const displayId = (id: string) => isUUID(id) ? id.substring(0, 8) : id;
+
   useEffect(() => {
     const term = searchTerm.toLowerCase().trim();
     if (!term) {
@@ -33,6 +36,7 @@ function MembersDirectoryContent() {
     } else {
       const filtered = members.filter(
         (m) =>
+          m.id.toLowerCase().includes(term) ||
           m.name.toLowerCase().includes(term) ||
           m.business.toLowerCase().includes(term) ||
           m.address.toLowerCase().includes(term)
@@ -232,7 +236,7 @@ function MembersDirectoryContent() {
                           </div>
                           <div>
                             <div className="fw-bold text-dark" style={{ fontSize: "16px" }}>{member.name}</div>
-                            <small className="text-muted">ID: {member.id.substring(0, 8)}</small>
+                            <small className="text-muted">ID: {displayId(member.id)}</small>
                           </div>
                         </div>
                       </td>

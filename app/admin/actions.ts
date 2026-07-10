@@ -92,6 +92,18 @@ export async function deleteItem(type: "TeamMembers" | "Events" | "membership" |
 // Add Team Member Action
 export async function addTeamMember(formData: FormData) {
   try {
+    const id = (formData.get("id") as string || "").trim();
+    if (!id) {
+      return { success: false, error: "Member ID is required." };
+    }
+
+    // Check for duplicate Member ID
+    const existingTeam = await db.teamMember.findUnique({ where: { id } });
+    const existingTable = await db.tableMember.findUnique({ where: { id } });
+    if (existingTeam || existingTable) {
+      return { success: false, error: "Member ID already exists. Please enter a unique Member ID." };
+    }
+
     const name = formData.get("name") as string;
     const role = formData.get("role") as string;
     const phone = formData.get("phone") as string;
@@ -111,6 +123,7 @@ export async function addTeamMember(formData: FormData) {
 
     await db.teamMember.create({
       data: {
+        id,
         name,
         role,
         phone: phone || null,

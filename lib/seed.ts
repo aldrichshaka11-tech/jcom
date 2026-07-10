@@ -32,6 +32,7 @@ export async function seedDatabaseIfEmpty() {
       await db.teamMember.createMany({
         data: [
           {
+            id: "TM-001",
             name: "Rajamoorthy R",
             role: "Zone Chairman",
             imageUrl: "/team/rajamoorthy2.jpg",
@@ -40,6 +41,7 @@ export async function seedDatabaseIfEmpty() {
             whatsapp: "+91 98765 43210",
           },
           {
+            id: "TM-002",
             name: "Sundar Rajan",
             role: "Past Zone Chairman",
             imageUrl: "/team/virtual-photoshoot-2 (6) - sundar rajan.jpg",
@@ -48,6 +50,7 @@ export async function seedDatabaseIfEmpty() {
             whatsapp: "+91 98765 43211",
           },
           {
+            id: "TM-003",
             name: "Gayathri T.",
             role: "Secretary",
             imageUrl: "/team/Screenshot_20251201_210947_Photos - Gayathri Thirupathi.jpg",
@@ -56,6 +59,7 @@ export async function seedDatabaseIfEmpty() {
             whatsapp: "+91 98765 43212",
           },
           {
+            id: "TM-004",
             name: "Loganathan G",
             role: "Treasurer",
             imageUrl: "/team/LOGU assistant coach - JFD.G LOGANATHAN.png",

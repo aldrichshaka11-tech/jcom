@@ -10,7 +10,7 @@ datasource db {
 }
 
 model TeamMember {
-  id        String   @id @default(uuid())
+  id        String   @id
   name      String
   role      String
   imageUrl  String
@@ -55,7 +55,7 @@ model ContactQuery {
 }
 
 model TableMember {
-  id        String   @id @default(uuid())
+  id        String   @id
   name      String
   mobile    String
   address   String

@@ -57,6 +57,10 @@ export default function AdminPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingType, setEditingType] = useState<"team" | "jcom-table" | "table-member" | null>(null);
+  const [memberIdInput, setMemberIdInput] = useState("");
+
+  const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+  const displayId = (id: string) => isUUID(id) ? id.substring(0, 8) : id;
 
   const [jcomTableForm, setJcomTableForm] = useState({
     name: "",
@@ -122,112 +126,131 @@ export default function AdminPage() {
 
   const handleMemberSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const trimmedId = memberIdInput.trim();
+    if (memberLevel !== "Zone 18 Table Member") {
+      if (!trimmedId) {
+        alert("Member ID is required.");
+        return;
+      }
+      const isDuplicate = !isEditing && (
+        dashboardData.team.some(m => m.id.trim().toLowerCase() === trimmedId.toLowerCase()) ||
+        dashboardData.tableMembers.some(m => m.id.trim().toLowerCase() === trimmedId.toLowerCase())
+      );
+      if (isDuplicate) {
+        alert("Member ID already exists. Please enter a unique Member ID.");
+        return;
+      }
+    }
+
     setSubmittingTeam(true);
 
     try {
       if (memberLevel === "Zone 18 Member") {
         const fd = new FormData();
-      fd.append("name", tableMemberForm.name);
-      fd.append("mobile", tableMemberForm.mobile);
-      fd.append("address", tableMemberForm.address);
-      fd.append("business", tableMemberForm.business);
-      fd.append("tableName", tableMemberForm.tableName);
+        fd.append("name", tableMemberForm.name);
+        fd.append("mobile", tableMemberForm.mobile);
+        fd.append("address", tableMemberForm.address);
+        fd.append("business", tableMemberForm.business);
+        fd.append("tableName", tableMemberForm.tableName);
 
-      if (isEditing && editingId) {
-        fd.append("id", editingId);
-        const result = await updateTableMember(fd);
-        if (result.success) {
-          alert("Table member updated successfully!");
-          resetMemberForm();
-          fetchAllData();
+        if (isEditing && editingId) {
+          fd.append("id", editingId);
+          const result = await updateTableMember(fd);
+          if (result.success) {
+            alert("Table member updated successfully!");
+            resetMemberForm();
+            fetchAllData();
+          } else {
+            alert(result.error || "Failed to update table member.");
+          }
         } else {
-          alert(result.error || "Failed to update table member.");
+          fd.append("id", trimmedId);
+          const result = await addTableMember(fd);
+          if (result.success) {
+            alert("Table member added successfully!");
+            resetMemberForm();
+            fetchAllData();
+          } else {
+            alert(result.error || "Failed to add table member.");
+          }
+        }
+      } else if (memberLevel === "Zone 18 Table Member") {
+        const fd = new FormData();
+        fd.append("name", jcomTableForm.name);
+        fd.append("phone", jcomTableForm.phone);
+        fd.append("email", jcomTableForm.email);
+
+        if (isEditing && editingId) {
+          fd.append("id", editingId);
+          const result = await updateJcomTable(fd);
+          if (result.success) {
+            alert("JCOM Table updated successfully!");
+            resetMemberForm();
+            fetchAllData();
+          } else {
+            alert(result.error || "Failed to update JCOM Table.");
+          }
+        } else {
+          const result = await addJcomTable(fd);
+          if (result.success) {
+            alert("JCOM Table added successfully!");
+            resetMemberForm();
+            fetchAllData();
+          } else {
+            alert(result.error || "Failed to add JCOM Table.");
+          }
         }
       } else {
-        const result = await addTableMember(fd);
-        if (result.success) {
-          alert("Table member added successfully!");
-          resetMemberForm();
-          fetchAllData();
-        } else {
-          alert(result.error || "Failed to add table member.");
+        // Chairman, Post Chairman, or Table Member (storing in db.teamMember)
+        const fd = new FormData();
+        fd.append("name", teamForm.name);
+        
+        let roleToSave = teamForm.role;
+        if (memberLevel === "Chairman") {
+          roleToSave = teamForm.role || "Zone Chairman";
+        } else if (memberLevel === "Post Chairman") {
+          roleToSave = teamForm.role || "Past Zone Chairman";
+        } else if (memberLevel === "Table Member") {
+          roleToSave = teamForm.role || "JCOM Member";
         }
-      }
-    } else if (memberLevel === "Zone 18 Table Member") {
-      const fd = new FormData();
-      fd.append("name", jcomTableForm.name);
-      fd.append("phone", jcomTableForm.phone);
-      fd.append("email", jcomTableForm.email);
+        fd.append("role", roleToSave);
+        fd.append("phone", teamForm.phone);
+        fd.append("whatsapp", teamForm.whatsapp);
+        fd.append("bio", teamForm.bio);
+        fd.append("imageUrl", teamForm.imageUrl);
+        if (teamFile) {
+          fd.append("imageFile", teamFile);
+        }
 
-      if (isEditing && editingId) {
-        fd.append("id", editingId);
-        const result = await updateJcomTable(fd);
-        if (result.success) {
-          alert("JCOM Table updated successfully!");
-          resetMemberForm();
-          fetchAllData();
+        if (isEditing && editingId) {
+          fd.append("id", editingId);
+          const result = await updateTeamMember(fd);
+          if (result.success) {
+            alert("Team member updated successfully!");
+            resetMemberForm();
+            fetchAllData();
+          } else {
+            alert(result.error || "Failed to update team member.");
+          }
         } else {
-          alert(result.error || "Failed to update JCOM Table.");
-        }
-      } else {
-        const result = await addJcomTable(fd);
-        if (result.success) {
-          alert("JCOM Table added successfully!");
-          resetMemberForm();
-          fetchAllData();
-        } else {
-          alert(result.error || "Failed to add JCOM Table.");
-        }
-      }
-    } else {
-      // Chairman, Post Chairman, or Table Member (storing in db.teamMember)
-      const fd = new FormData();
-      fd.append("name", teamForm.name);
-      
-      let roleToSave = teamForm.role;
-      if (memberLevel === "Chairman") {
-        roleToSave = teamForm.role || "Zone Chairman";
-      } else if (memberLevel === "Post Chairman") {
-        roleToSave = teamForm.role || "Past Zone Chairman";
-      } else if (memberLevel === "Table Member") {
-        roleToSave = teamForm.role || "JCOM Member";
-      }
-      fd.append("role", roleToSave);
-      fd.append("phone", teamForm.phone);
-      fd.append("whatsapp", teamForm.whatsapp);
-      fd.append("bio", teamForm.bio);
-      fd.append("imageUrl", teamForm.imageUrl);
-      if (teamFile) {
-        fd.append("imageFile", teamFile);
-      }
-
-      if (isEditing && editingId) {
-        fd.append("id", editingId);
-        const result = await updateTeamMember(fd);
-        if (result.success) {
-          alert("Team member updated successfully!");
-          resetMemberForm();
-          fetchAllData();
-        } else {
-          alert(result.error || "Failed to update team member.");
-        }
-      } else {
-        const result = await addTeamMember(fd);
-        if (result.success) {
-          alert("Team member added successfully!");
-          resetMemberForm();
-          fetchAllData();
-        } else {
-          alert(result.error || "Failed to add team member.");
+          fd.append("id", trimmedId);
+          const result = await addTeamMember(fd);
+          if (result.success) {
+            alert("Team member added successfully!");
+            resetMemberForm();
+            fetchAllData();
+          } else {
+            alert(result.error || "Failed to add team member.");
+          }
         }
       }
-    }
-    } catch (error: any) {
-      alert(error.message || "An error occurred during submission. (Possible 413 File Too Large)");
-    } finally {
-      setSubmittingTeam(false);
-    }
-  };
+  } catch (error: any) {
+    alert(error.message || "An error occurred during submission. (Possible 413 File Too Large)");
+  } finally {
+    setSubmittingTeam(false);
+  }
+};
 
   const resetMemberForm = () => {
     setTeamForm({ name: "", role: "Zone Chairman", phone: "", whatsapp: "", imageUrl: "", bio: "" });
@@ -238,6 +261,7 @@ export default function AdminPage() {
     setEditingId(null);
     setEditingType(null);
     setMemberLevel("Chairman");
+    setMemberIdInput("");
     const fileInput = document.getElementById("t_image_file") as HTMLInputElement;
     if (fileInput) fileInput.value = "";
   };
@@ -247,6 +271,7 @@ export default function AdminPage() {
     setEditingId(member.id);
     setEditingType("team");
     setTeamSubTab("governing");
+    setMemberIdInput(member.id);
 
     const roleLower = member.role.toLowerCase();
     let level = "Table Member";
@@ -1035,6 +1060,29 @@ export default function AdminPage() {
                               </select>
                             </div>
 
+                            {memberLevel !== "Zone 18 Table Member" && (
+                              <div className="mb-4">
+                                <label className="admin-form-label text-primary">Member ID</label>
+                                <input
+                                  type="text"
+                                  className="form-control admin-form-control"
+                                  placeholder="e.g. M-101"
+                                  value={memberIdInput}
+                                  onChange={(e) => setMemberIdInput(e.target.value)}
+                                  disabled={isEditing}
+                                  required
+                                />
+                                {memberIdInput.trim() && !isEditing && (
+                                  dashboardData.team.some(m => m.id.trim().toLowerCase() === memberIdInput.trim().toLowerCase()) ||
+                                  dashboardData.tableMembers.some(m => m.id.trim().toLowerCase() === memberIdInput.trim().toLowerCase())
+                                ) && (
+                                  <div className="text-danger small mt-1">
+                                    Member ID already exists. Please enter a unique Member ID.
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
                             {memberLevel === "Zone 18 Member" ? (
                               // Level 5: Table Member (Zone 18 Member)
                               <>
@@ -1286,6 +1334,7 @@ export default function AdminPage() {
                                             <img src={member.imageUrl || "https://placehold.co/50x50"} alt={member.name} className="rounded-circle object-fit-cover shadow-sm border border-light" width="42" height="42" />
                                             <div>
                                               <div className="fw-semibold text-dark">{member.name}</div>
+                                              <div className="text-muted small">ID: {displayId(member.id)}</div>
                                               {member.bio && <div className="text-muted small text-truncate" style={{ maxWidth: '180px' }} title={member.bio}>{member.bio}</div>}
                                             </div>
                                           </div>
@@ -1379,7 +1428,7 @@ export default function AdminPage() {
                                           <td>
                                             <div className="fw-semibold text-dark">{member.name}</div>
                                             <div className="small text-muted mt-1">
-                                              <i className="bi bi-telephone-fill"></i> {member.mobile}
+                                              ID: {displayId(member.id)} | <i className="bi bi-telephone-fill"></i> {member.mobile}
                                             </div>
                                           </td>
                                           <td>

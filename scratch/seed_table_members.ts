@@ -1,4 +1,5 @@
 import { db } from "../lib/db";
+import crypto from "crypto";
 
 const zoneTables = [
   "JCOM L Ambasamudram 1.0",
@@ -77,6 +78,7 @@ async function main() {
       
       await db.tableMember.create({
         data: {
+          id: crypto.randomUUID(),
           name: memberName,
           mobile: `+91 ${memberMobile.substring(2, 7)} ${memberMobile.substring(7)}`,
           address: memberAddress,
